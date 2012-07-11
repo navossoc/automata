@@ -32,6 +32,7 @@ public class State {
 
     /**
      * Construtor padrão
+     *
      * @param label nome
      * @param type tipo
      */
@@ -42,6 +43,7 @@ public class State {
 
     /**
      * Retorna o nome
+     *
      * @return
      */
     public String getLabel() {
@@ -56,7 +58,35 @@ public class State {
     }
 
     /**
+     * É um estado inicial
+     *
+     * @return
+     */
+    public boolean isInitial() {
+        return (this.type & INITIAL) == INITIAL;
+    }
+
+    /**
+     * É um estado final
+     *
+     * @return
+     */
+    public boolean isFinal() {
+        return (this.type & FINAL) == FINAL;
+    }
+
+    /**
+     * É um estado inicial e final
+     *
+     * @return
+     */
+    public boolean isInitialFinal() {
+        return (this.type & BOTH) == BOTH;
+    }
+
+    /**
      * Altera o tipo
+     *
      * @param type novo tipo
      */
     public void setType(int type) {

@@ -104,8 +104,8 @@ public class Automata {
     public Collection<State> getInitialStates() {
         List<State> initials = new ArrayList<State>();
         for (State state : this.states.values()) {
-            // Verifica se o tipo do estado contém o atributo inicial
-            if ((state.getType() & State.INITIAL) == State.INITIAL) {
+            // Verifica se o estado contém o atributo inicial
+            if (state.isInitial()) {
                 initials.add(state);
             }
         }
@@ -120,8 +120,8 @@ public class Automata {
     public Collection<State> getFinalStates() {
         List<State> finals = new ArrayList<State>();
         for (State state : this.states.values()) {
-            // Verifica se o tipo do estado contém o atributo final
-            if ((state.getType() & State.FINAL) == State.FINAL) {
+            // Verifica se o estado contém o atributo final
+            if (state.isFinal()) {
                 finals.add(state);
             }
         }
