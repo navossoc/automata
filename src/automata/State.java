@@ -3,7 +3,7 @@ package automata;
 /**
  * Classe que representa os estados
  */
-public class State {
+public class State implements Comparable<State> {
 
     /**
      * Estado normal
@@ -52,6 +52,8 @@ public class State {
 
     /**
      * Retorna o tipo
+     *
+     * @return
      */
     public int getType() {
         return type;
@@ -91,6 +93,11 @@ public class State {
      */
     public void setType(int type) {
         this.type = type;
+    }
+
+    @Override
+    public int compareTo(State state) {
+        return this.label.compareTo(state.label);
     }
 
     @Override
