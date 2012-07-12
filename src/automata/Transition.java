@@ -73,6 +73,33 @@ public class Transition implements Comparable<Transition> {
         return symbol;
     }
 
+    /**
+     * Altera o estado de origem
+     *
+     * @param state1 novo estado de origem
+     */
+    public void setState1(State state1) {
+        this.state1 = state1;
+    }
+
+    /**
+     * Altera o estado de destino
+     *
+     * @param state2 novo estado de destino
+     */
+    public void setState2(State state2) {
+        this.state2 = state2;
+    }
+
+    /**
+     * Altera o símbolo
+     *
+     * @param symbol novo símbolo
+     */
+    public void setSymbol(String symbol) {
+        this.symbol = symbol;
+    }
+
     @Override
     public int compareTo(Transition transition) {
         return this.toString().compareTo(transition.toString());
