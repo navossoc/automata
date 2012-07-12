@@ -3,7 +3,7 @@ package automata;
 /**
  * Classe que representa a transição
  */
-public class Transition {
+public class Transition implements Comparable<Transition> {
 
     /**
      * Estado origem
@@ -29,6 +29,38 @@ public class Transition {
         this.state1 = state1;
         this.state2 = state2;
         this.symbol = symbol;
+    }
+
+    /**
+     * Retorna o estado de origem
+     *
+     * @return
+     */
+    public State getState1() {
+        return state1;
+    }
+
+    /**
+     * Retorna o estado de destino
+     *
+     * @return
+     */
+    public State getState2() {
+        return state2;
+    }
+
+    /**
+     * Retorna o símbolo
+     *
+     * @return
+     */
+    public String getSymbol() {
+        return symbol;
+    }
+
+    @Override
+    public int compareTo(Transition transition) {
+        return this.toString().compareTo(transition.toString());
     }
 
     @Override
