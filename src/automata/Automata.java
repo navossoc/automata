@@ -155,7 +155,10 @@ public class Automata {
             temp.states.put(state.getLabel(), new State(state));
         }
         for (Transition transition : this.transitions) {
-            temp.addTransition(new Transition(transition));
+            temp.addTransition(new Transition(
+                    temp.getState(transition.getState1().getLabel()),
+                    temp.getState(transition.getState2().getLabel()),
+                    transition.getSymbol()));
         }
 
         return temp;
