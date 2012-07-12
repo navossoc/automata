@@ -1,0 +1,17 @@
+a b c d e
+q0 q1 q1q2 q2 q2q3 q3 q4
+q0
+q1q2 q2 q2q3 q4
+q0 a q1q2
+q1 b q2
+q1 e q1
+q1q2 b q2q3
+q1q2 d q0
+q1q2 e q1
+q2 b q3
+q2 d q0
+q2q3 b q3
+q2q3 c q4
+q2q3 d q0
+q3 c q4
+q4 d q4
