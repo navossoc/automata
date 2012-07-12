@@ -39,6 +39,15 @@ public class Automata {
     }
 
     /**
+     * Adiciona um novo estado
+     *
+     * @param state estado a ser adicionado
+     */
+    public void addState(State state) {
+        this.states.put(state.getLabel(), state);
+    }
+
+    /**
      * Adiciona estados
      *
      * @param states array de estados
