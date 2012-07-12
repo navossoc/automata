@@ -1,0 +1,25 @@
+a b c d e
+q0 q1 q1q2q3 q1q2q3q4 q2 q2q4 q2q4q5 q3 q4 q5
+q0
+q1q2q3 q1q2q3q4 q2 q2q4 q2q4q5
+q0 a q2
+q0 d q1
+q1 b q1
+q1 b q2
+q1 b q3
+q1q2q3 b q1q2q3q4
+q1q2q3 c q4
+q1q2q3 d q2q4q5
+q1q2q3q4 b q1q2q3q4
+q1q2q3q4 c q2q4
+q1q2q3q4 d q2q4q5
+q2 c q4
+q2q4 c q2q4
+q2q4q5 c q2q4
+q2q4q5 e q4
+q3 b q4
+q3 d q2
+q3 d q4
+q3 d q5
+q4 c q2
+q5 e q4
