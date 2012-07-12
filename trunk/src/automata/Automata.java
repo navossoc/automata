@@ -8,25 +8,25 @@ import java.util.*;
 public class Automata {
 
     /**
-     * Lista que contém os símbolos
+     * Conjunto que contém os símbolos
      */
-    private List<String> symbols;
+    private Set<String> symbols;
     /**
      * Mapa que contém os estados
      */
     private Map<String, State> states;
     /**
-     * Lista que contém as transições
+     * Conjunto que contém as transições
      */
-    private List<Transition> transitions;
+    private Set<Transition> transitions;
 
     /**
      * Construtor padrão
      */
     public Automata() {
-        this.symbols = new ArrayList<String>();
+        this.symbols = new TreeSet<String>();
         this.states = new TreeMap<String, State>();
-        this.transitions = new ArrayList<Transition>();
+        this.transitions = new TreeSet<Transition>();
     }
 
     /**
@@ -79,11 +79,11 @@ public class Automata {
     }
 
     /**
-     * Retorna uma lista de símbolos
+     * Retorna um conjunto de símbolos
      *
      * @return
      */
-    public List<String> getSymbols() {
+    public Set<String> getSymbols() {
         return this.symbols;
     }
 
@@ -129,11 +129,11 @@ public class Automata {
     }
 
     /**
-     * Retorna uma lista de transições
+     * Retorna um conjunto de transições
      *
      * @return
      */
-    public List<Transition> getTransitions() {
+    public Set<Transition> getTransitions() {
         return this.transitions;
     }
 }
