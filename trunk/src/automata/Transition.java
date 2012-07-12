@@ -6,6 +6,10 @@ package automata;
 public class Transition implements Comparable<Transition> {
 
     /**
+     * Caractere que representa o símbolo de vazio
+     */
+    public static final String EMPTY_SYMBOL = "~";
+    /**
      * Estado origem
      */
     private State state1;
@@ -29,6 +33,17 @@ public class Transition implements Comparable<Transition> {
         this.state1 = state1;
         this.state2 = state2;
         this.symbol = symbol;
+    }
+
+    /**
+     * Constrói uma transição a partir dos valores de uma transição existente
+     *
+     * @param transition transição a ser copiada
+     */
+    public Transition(Transition transition) {
+        this.state1 = transition.state1;
+        this.state2 = transition.state2;
+        this.symbol = transition.symbol;
     }
 
     /**
@@ -61,6 +76,23 @@ public class Transition implements Comparable<Transition> {
     @Override
     public int compareTo(Transition transition) {
         return this.toString().compareTo(transition.toString());
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof Transition) {
+            return this.toString().equals(obj.toString());
+        }
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 29 * hash + (this.state1 != null ? this.state1.hashCode() : 0);
+        hash = 29 * hash + (this.state2 != null ? this.state2.hashCode() : 0);
+        hash = 29 * hash + (this.symbol != null ? this.symbol.hashCode() : 0);
+        return hash;
     }
 
     @Override

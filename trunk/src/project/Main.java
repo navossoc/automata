@@ -1,6 +1,7 @@
 package project;
 
 import automata.Automata;
+import project.algorithms.EmptyTransitions;
 
 public class Main {
 
@@ -9,8 +10,7 @@ public class Main {
      */
     public static void main(String[] args) {
         Automata a1 = new Automata();
-        FileFormat.read("samples/automata1a", a1);
-
-
+        FileFormat.read("samples/automata5", a1);
+        Automata a2 = new EmptyTransitions(a1).Start();
     }
 }

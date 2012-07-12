@@ -42,6 +42,16 @@ public class State implements Comparable<State> {
     }
 
     /**
+     * Constrói um estado a partir dos valores de um estado existente
+     *
+     * @param state estado a ser copiado
+     */
+    public State(State state) {
+        this.label = state.label;
+        this.type = state.type;
+    }
+
+    /**
      * Retorna o nome
      *
      * @return

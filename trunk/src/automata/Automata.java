@@ -136,4 +136,28 @@ public class Automata {
     public Set<Transition> getTransitions() {
         return this.transitions;
     }
+
+    /**
+     * Remove uma transição
+     *
+     * @param transition transição a ser removida
+     * @return
+     */
+    public boolean removeTransition(Transition transition) {
+        return this.transitions.remove(transition);
+    }
+
+    @Override
+    public Automata clone() {
+        Automata temp = new Automata();
+        temp.symbols.addAll(this.symbols);
+        for (State state : this.states.values()) {
+            temp.states.put(state.getLabel(), new State(state));
+        }
+        for (Transition transition : this.transitions) {
+            temp.addTransition(new Transition(transition));
+        }
+
+        return temp;
+    }
 }
