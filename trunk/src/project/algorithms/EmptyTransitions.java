@@ -4,7 +4,7 @@ import automata.Automata;
 import automata.State;
 import automata.Transition;
 import java.util.Iterator;
-import java.util.Set;
+import java.util.SortedSet;
 import java.util.TreeSet;
 
 /**
@@ -15,11 +15,11 @@ public class EmptyTransitions {
     /**
      * Mantêm uma cópia do autômato que será modificado
      */
-    private Automata newAutomata;
+    private Automata automata;
     /**
      * Conjunto temporário de transições em vazio
      */
-    private Set<Transition> emptyTransitions;
+    private SortedSet<Transition> emptyTransitions;
 
     /**
      * Construtor padrão
@@ -27,7 +27,7 @@ public class EmptyTransitions {
      * @param automata automato a ser otimizado
      */
     public EmptyTransitions(Automata automata) {
-        this.newAutomata = automata.clone();
+        this.automata = automata.clone();
         this.emptyTransitions = new TreeSet<Transition>();
     }
 
@@ -37,7 +37,7 @@ public class EmptyTransitions {
      * @return autômato equivalente sem as transições em vazio
      */
     public Automata Start() {
-        Set<Transition> empty = getEmptyTransitions();
+        SortedSet<Transition> empty = getEmptyTransitions();
         while (empty.size() > 0) {
             for (Transition t : empty) {
 
@@ -53,32 +53,32 @@ public class EmptyTransitions {
                     }
 
                     // Obtêm todas as transições que partem do estado destino
-                    Set<Transition> transitions = getTransitions(destination);
+                    SortedSet<Transition> transitions = this.automata.getTransitionsFromOrigin(destination);
 
                     for (Transition beingAnalyzed : transitions) {
                         // Adiciona uma nova transição
-                        this.newAutomata.addTransition(new Transition(origin, beingAnalyzed.getState2(), beingAnalyzed.getSymbol()));
+                        this.automata.addTransition(new Transition(origin, beingAnalyzed.getState2(), beingAnalyzed.getSymbol()));
                     }
                 }
 
                 // Remove a transição que estava sendo analisada
-                this.newAutomata.removeTransition(t);
+                this.automata.removeTransition(t);
             }
 
             empty = getEmptyTransitions();
         }
 
         // Remove o símbolo de vazio do alfabeto
-        Iterator<String> iterator = this.newAutomata.getSymbols().iterator();
+        Iterator<String> iterator = this.automata.getSymbols().iterator();
         while (iterator.hasNext()) {
             String symbol = iterator.next();
             if (symbol.equalsIgnoreCase(Transition.EMPTY_SYMBOL)) {
-                this.newAutomata.getSymbols().remove(symbol);
+                this.automata.getSymbols().remove(symbol);
                 break;
             }
         }
 
-        return this.newAutomata;
+        return this.automata;
     }
 
     /**
@@ -96,31 +96,14 @@ public class EmptyTransitions {
      *
      * @return
      */
-    private Set<Transition> getEmptyTransitions() {
+    private SortedSet<Transition> getEmptyTransitions() {
         emptyTransitions.clear();
-        for (Transition originalTransition : this.newAutomata.getTransitions()) {
+        for (Transition originalTransition : this.automata.getTransitions()) {
             if (isEmptySymbol(originalTransition)) {
                 emptyTransitions.add(originalTransition);
             }
         }
 
         return emptyTransitions;
-    }
-
-    /**
-     * Retorna um conjunto com todas as transições que tem origem do estado específicado
-     *
-     * @param state estado de origem
-     * @return
-     */
-    private Set<Transition> getTransitions(State state) {
-        Set<Transition> transitions = new TreeSet<Transition>();
-        for (Transition t : this.newAutomata.getTransitions()) {
-            if (t.getState1().equals(state)) {
-                transitions.add(t);
-            }
-        }
-
-        return transitions;
     }
 }

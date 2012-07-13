@@ -3,107 +3,124 @@ package project.algorithms;
 import automata.Automata;
 import automata.State;
 import automata.Transition;
-import java.util.Collection;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeMap;
-import java.util.TreeSet;
+import java.util.*;
 
 /**
  * ETAPA 2 - Algoritmo de Eliminação de Não Determinísmos
  */
 public class NonDeterministic {
 
+    /**
+     * Mantêm uma cópia do autômato que será modificado
+     */
     private final Automata automata;
 
+    /**
+     * Construtor padrão
+     *
+     * @param automata autômato a ser otimizado
+     */
     public NonDeterministic(Automata automata) {
         this.automata = automata.clone();
 
     }
 
+    /**
+     * Executa o algoritmo de eliminação de não determinísmos
+     *
+     * @return autômato equivalente determinístico
+     */
     public Automata Start() {
-        Map<State, Map<String, Set<Transition>>> all = getNonDeterminism();
-        Set<State> tempStates = new TreeSet<State>();
+        // Começa obtendo todos os não determinísmos
+        SortedMap<State, SortedMap<String, SortedSet<Transition>>> all = getNonDeterminism();
+        SortedSet<State> tempStates = new TreeSet<State>();
+
+        // Enquanto houver pelo menos um não determinísmo
         while (all.size() > 0) {
-            for (State state : all.keySet()) {
-                System.out.println("state = " + state);
-                Map<String, Set<Transition>> symbolTransitions = all.get(state);
-                for (String symbol : symbolTransitions.keySet()) {
-                    System.out.println("for symbol = " + symbol);
-                    tempStates.clear();
-                    String newStateLabel = "";
-                    int newStateType = State.NORMAL;
-                    for (Transition t : symbolTransitions.get(symbol)) {
-                        System.out.println(t);
-                        State tempState = t.getState2();
-                        tempStates.add(tempState);
+            State state = all.firstKey();
 
-                        // TODO: verificar se os labels vão estar sempre ordenados
-                        // TODO: concatenar o novo estado - DONE
-                        newStateLabel += tempState.getLabel();
-                        // TODO: verificar se o estado é final e modificar se preciso - DONE
-                        if (tempState.isFinal()) {
-                            newStateType |= tempState.getType();
-                        }
+            SortedMap<String, SortedSet<Transition>> symbolTransitions = all.get(state);
 
-                    }
-                    // TODO: criar novo estado - DONE
-                    State newState = new State(newStateLabel, newStateType);
+            String symbol = symbolTransitions.firstKey();
 
-                    // TODO: adicionar novo estado ao conjunto de estados
-                    automata.addState(newState);
+            tempStates.clear();
+            String newStateLabel = "";
+            int newStateType = State.NORMAL;
 
-                    // TODO: adicionar ao novo estado as transições dos estados usados
-                    for (State tempState : tempStates) {
-                        for (Transition tempTransitions : getTransitions(tempState)) {
-                            automata.addTransition(new Transition(newState,
-                                    tempTransitions.getState2(), tempTransitions.getSymbol()));
-                        }
-                    }
+            // Para cada transição do não determinismo para dado símbolo
+            for (Transition t : symbolTransitions.get(symbol)) {
+                State tempState = t.getState2();
+                tempStates.add(tempState);
 
-                    // TODO: remover transições antigas (q0 a q1, q0 a q2) - DONE
-                    //removeTransitions(symbolTransitions.get(symbol));
+                // é concatenado o nome dos estados para gerar o novo estado
+                newStateLabel += tempState.getLabel();
 
-                    // TODO: criar nova transição e adiciona-la (q0 a q1q2) - DONE
-                    //Transition newTransition = new Transition(state, newState, symbol);
-                    //automata.addTransition(newTransition);
-
-                    // TODO: substituir o novo estado nas transições antigas
-                    replaceStateInTransitions(tempStates, newState);
-                    /* /for (State tempState : tempStates) {
-                     * replaceStateInTransitions(tempState, newState);
-                     * } */
-                    break;
+                // se o estado de destino for final, o novo também será final
+                if (tempState.isFinal()) {
+                    newStateType |= tempState.getType();
                 }
-                break;
+
             }
+            // é criado o novo e estado
+            State newState = new State(newStateLabel, newStateType);
+
+            // adiciona o novo estado ao conjunto de estados do autômato
+            automata.addState(newState);
+
+            // são copiadas todas as transições dos estados que tinham origem nos estados de destino
+            for (State tempState : tempStates) {
+                for (Transition tempTransitions : this.automata.getTransitionsFromOrigin(tempState)) {
+                    // adiciona uma nova transição com origem no novo estado e destino
+                    automata.addTransition(new Transition(newState,
+                            tempTransitions.getState2(), tempTransitions.getSymbol()));
+                }
+            }
+
+            // substitui as referências dos estados de destino antigas para o novo estado
+            replaceStateInTransitions(newState);
+
+            // obtém uma nova relação de não determinísmo
             all = getNonDeterminism();
         }
+        
         return automata;
     }
 
-    public Map<State, Map<String, Set<Transition>>> getNonDeterminism() {
-        Map<State, Map<String, Set<Transition>>> all = new TreeMap<State, Map<String, Set<Transition>>>();
-
+    /**
+     * Retorna um mapa contendo todos os não determinísmos dado um estado
+     *
+     * @return
+     */
+    private SortedMap<State, SortedMap<String, SortedSet<Transition>>> getNonDeterminism() {
+        SortedMap<State, SortedMap<String, SortedSet<Transition>>> all = new TreeMap<State, SortedMap<String, SortedSet<Transition>>>();
+        
+        // para cada estado do autômato
         for (State state : automata.getStates()) {
 
-            Map<String, Set<Transition>> map = new TreeMap<String, Set<Transition>>();
+            // é criado um mapa contendo a relação de um símbolo para todas as transições que o consomem
+            // com origem no estado que está sendo analisado
+            SortedMap<String, SortedSet<Transition>> map = new TreeMap<String, SortedSet<Transition>>();
             for (String symbol : automata.getSymbols()) {
                 map.put(symbol, new TreeSet<Transition>());
             }
-            for (Transition transition : getTransitions(state)) {
+            for (Transition transition : this.automata.getTransitionsFromOrigin(state)) {
                 map.get(transition.getSymbol()).add(transition);
             }
-
-            Map<String, Set<Transition>> toBeCopy = new TreeMap<String, Set<Transition>>();
+            
+            SortedMap<String, SortedSet<Transition>> toBeCopy = new TreeMap<String, SortedSet<Transition>>();
             for (String symbol : map.keySet()) {
-                Set<Transition> transitions = map.get(symbol);
+                SortedSet<Transition> transitions = map.get(symbol);
+                
+                // verifica se ocorre não determinísmo para um símbolo a partir do estado que está sendo analisado
                 if (transitions.size() > 1) {
+                    // se ocorrer não determinísmo, todas as transições são copiadas
                     toBeCopy.put(symbol, transitions);
                 }
             }
 
+            // se existir pelo menos um não determinísmo para um símbolo no estado analisado
             if (toBeCopy.size() > 0) {
+                // ele é adicionado
                 all.put(state, toBeCopy);
             }
         }
@@ -111,34 +128,38 @@ public class NonDeterministic {
         return all;
     }
 
-    private Set<Transition> getTransitions(State state) {
-        Set<Transition> transitions = new TreeSet<Transition>();
-        for (Transition t : automata.getTransitions()) {
-            if (t.getState1().equals(state)) {
-                transitions.add(t);
-            }
-        }
-
-        return transitions;
-    }
-
-    private void replaceStateInTransitions(Set<State> oldState, State newState) {
-        Map<State, Map<String, Set<Transition>>> all = getNonDeterminism();
+    /**
+     * Substituí o estado de destino das transições pelo novo
+     * específicado
+     *
+     * @param newState novo estado de destino
+     */
+    private void replaceStateInTransitions(State newState) {
+        // é obtido um mapa contendo todos os não determinísmos
+        SortedMap<State, SortedMap<String, SortedSet<Transition>>> all = getNonDeterminism();
+        
+        // para cada um dos estados com não determinísmo
         for (State state : all.keySet()) {
-            Map<String, Set<Transition>> symbolTransitions = all.get(state);
+            SortedMap<String, SortedSet<Transition>> symbolTransitions = all.get(state);
             for (String symbol : symbolTransitions.keySet()) {
                 String newDestination = "";
+                // é gerado um estado temporário a partir das transições com origem no estado que está sendo
+                // analisado e para o símbolo
                 for (Transition t : symbolTransitions.get(symbol)) {
                     newDestination += t.getState2();
                 }
+                
+                // se o novo estado já existir
                 if (automata.getState(newDestination) != null) {
+                    // são removidas as transições antigas
                     for (Transition t : symbolTransitions.get(symbol)) {
                         automata.removeTransition(t);
                     }
 
+                    // se adiciona a nova transição com origem no estado analisado e destino no
+                    // novo estado gerado
                     automata.addTransition(new Transition(state, newState, symbol));
                 }
-
             }
         }
     }
