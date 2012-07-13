@@ -106,12 +106,12 @@ public class Automata {
     }
 
     /**
-     * Retorna uma lista contendo estados iniciais
+     * Retorna um conjunto contendo estados iniciais
      *
      * @return
      */
-    public Collection<State> getInitialStates() {
-        List<State> initials = new ArrayList<State>();
+    public SortedSet<State> getInitialStates() {
+        SortedSet<State> initials = new TreeSet<State>();
         for (State state : this.states.values()) {
             // Verifica se o estado contém o atributo inicial
             if (state.isInitial()) {
@@ -122,12 +122,12 @@ public class Automata {
     }
 
     /**
-     * Retorna uma lista contendo estados finais
+     * Retorna um conjunto contendo estados finais
      *
      * @return
      */
-    public Collection<State> getFinalStates() {
-        List<State> finals = new ArrayList<State>();
+    public SortedSet<State> getFinalStates() {
+        SortedSet<State> finals = new TreeSet<State>();
         for (State state : this.states.values()) {
             // Verifica se o estado contém o atributo final
             if (state.isFinal()) {
@@ -160,6 +160,32 @@ public class Automata {
             }
         }
         return tempTransitions;
+    }
+
+    /**
+     * Retorna um conjunto com todas as transições cujo destino seja o estado específicado
+     *
+     * @param destination estado de destino
+     * @return
+     */
+    public SortedSet<Transition> getTransitionsFromDestination(State destination) {
+        SortedSet<Transition> tempTransitions = new TreeSet<Transition>();
+        for (Transition t : this.getTransitions()) {
+            if (t.getState2().equals(destination)) {
+                tempTransitions.add(t);
+            }
+        }
+        return tempTransitions;
+    }
+
+    /**
+     * Remove um estado
+     *
+     * @param state estado a ser removido
+     * @return
+     */
+    public State removeState(State state) {
+        return this.states.remove(state.getLabel());
     }
 
     /**

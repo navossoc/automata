@@ -70,7 +70,7 @@ public class State implements Comparable<State> {
     }
 
     /**
-     * É um estado inicial
+     * Retorna se o estado é inicial
      *
      * @return
      */
@@ -79,7 +79,7 @@ public class State implements Comparable<State> {
     }
 
     /**
-     * É um estado final
+     * Retorna se o estado é final
      *
      * @return
      */
@@ -88,7 +88,7 @@ public class State implements Comparable<State> {
     }
 
     /**
-     * É um estado inicial e final
+     * Retorna se o estado é inicial e final ao mesmo tempo
      *
      * @return
      */
