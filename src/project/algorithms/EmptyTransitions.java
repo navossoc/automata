@@ -3,19 +3,13 @@ package project.algorithms;
 import automata.Automata;
 import automata.State;
 import automata.Transition;
-import java.util.Iterator;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
 /**
  * ETAPA 1 - Algoritmo de Eliminação de Transições em Vazio
  */
-public class EmptyTransitions {
-
-    /**
-     * Mantém uma cópia do autômato que será modificado
-     */
-    private Automata automata;
+public class EmptyTransitions extends BaseAlgorithm {
 
     /**
      * Construtor padrão
@@ -23,7 +17,7 @@ public class EmptyTransitions {
      * @param automata autômato a ser otimizado
      */
     public EmptyTransitions(Automata automata) {
-        this.automata = automata.clone();
+        super(automata);
     }
 
     /**
@@ -31,6 +25,7 @@ public class EmptyTransitions {
      *
      * @return autômato equivalente sem as transições em vazio
      */
+    @Override
     public Automata Start() {
         SortedSet<Transition> empty = getEmptyTransitions();
         while (empty.size() > 0) {
@@ -64,14 +59,7 @@ public class EmptyTransitions {
         }
 
         // Remove o símbolo de vazio do alfabeto
-        Iterator<String> iterator = this.automata.getSymbols().iterator();
-        while (iterator.hasNext()) {
-            String symbol = iterator.next();
-            if (symbol.equalsIgnoreCase(Transition.EMPTY_SYMBOL)) {
-                this.automata.getSymbols().remove(symbol);
-                break;
-            }
-        }
+        this.automata.getSymbols().remove(BaseAlgorithm.EMPTY_SYMBOL);
 
         return this.automata;
     }
@@ -84,7 +72,7 @@ public class EmptyTransitions {
      */
     private boolean isEmptySymbol(Transition transition) {
         // Compara o símbolo da transição
-        return transition.getSymbol().equalsIgnoreCase(Transition.EMPTY_SYMBOL);
+        return transition.getSymbol().equalsIgnoreCase(BaseAlgorithm.EMPTY_SYMBOL);
     }
 
     /**
