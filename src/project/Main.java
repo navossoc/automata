@@ -4,6 +4,9 @@ import automata.Automata;
 import project.algorithms.EmptyTransitions;
 import project.algorithms.NonDeterministic;
 
+/**
+ * Classe principal
+ */
 public class Main {
 
     /**

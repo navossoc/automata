@@ -60,6 +60,11 @@ public class GraphViewer extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    /**
+     * Inicializa uma janela contendo o desenho do grafo com seus respectivos vértices e arrestas
+     *
+     * @param automata autômato a ser desenhado
+     */
     public static void showAutomata(Automata automata) {
         // Cria um grafo direcional que permite múltiplas arestas
         final Graph<State, Transition> graph = new DirectedSparseMultigraph<State, Transition>();

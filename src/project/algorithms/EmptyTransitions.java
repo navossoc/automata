@@ -13,22 +13,17 @@ import java.util.TreeSet;
 public class EmptyTransitions {
 
     /**
-     * Mantêm uma cópia do autômato que será modificado
+     * Mantém uma cópia do autômato que será modificado
      */
     private Automata automata;
-    /**
-     * Conjunto temporário de transições em vazio
-     */
-    private SortedSet<Transition> emptyTransitions;
 
     /**
      * Construtor padrão
      *
-     * @param automata automato a ser otimizado
+     * @param automata autômato a ser otimizado
      */
     public EmptyTransitions(Automata automata) {
         this.automata = automata.clone();
-        this.emptyTransitions = new TreeSet<Transition>();
     }
 
     /**
@@ -52,7 +47,7 @@ public class EmptyTransitions {
                         origin.setType(origin.getType() | State.FINAL);
                     }
 
-                    // Obtêm todas as transições que partem do estado destino
+                    // Obtém todas as transições que partem do estado destino
                     SortedSet<Transition> transitions = this.automata.getTransitionsFromOrigin(destination);
 
                     for (Transition beingAnalyzed : transitions) {
@@ -82,23 +77,28 @@ public class EmptyTransitions {
     }
 
     /**
-     * Verifica se a transição consome símbolo vazio
+     * Verifica se a transição consome o símbolo vazio
      *
      * @param transition transição a ser verificada
      * @return
      */
     private boolean isEmptySymbol(Transition transition) {
+        // Compara o símbolo da transição
         return transition.getSymbol().equalsIgnoreCase(Transition.EMPTY_SYMBOL);
     }
 
     /**
-     * Retorna um conjunto com todas as transições que consomem símbolo vazio do autômato
+     * Retorna um conjunto com todas as transições que consomem o símbolo vazio do autômato
      *
      * @return
      */
     private SortedSet<Transition> getEmptyTransitions() {
-        emptyTransitions.clear();
+        // Conjunto temporário de transições em vazio
+        SortedSet<Transition> emptyTransitions = new TreeSet<Transition>();
+
+        // Para cada transição do autômato
         for (Transition originalTransition : this.automata.getTransitions()) {
+            // Verifica se o símbolo é o vazio
             if (isEmptySymbol(originalTransition)) {
                 emptyTransitions.add(originalTransition);
             }

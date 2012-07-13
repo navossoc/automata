@@ -5,6 +5,7 @@ import java.awt.Color;
 import java.awt.Paint;
 import org.apache.commons.collections15.Transformer;
 
+// TODO: tentar modificar o formato da figura
 public class StatePainter implements Transformer<State, Paint> {
 
     @Override
