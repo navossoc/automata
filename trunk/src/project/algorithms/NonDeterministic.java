@@ -11,12 +11,7 @@ import java.util.TreeSet;
 /**
  * ETAPA 2 - Algoritmo de Eliminação de Não Determinísmos
  */
-public class NonDeterministic {
-
-    /**
-     * Mantém uma cópia do autômato que será modificado
-     */
-    private final Automata automata;
+public class NonDeterministic extends BaseAlgorithm {
 
     /**
      * Construtor padrão
@@ -24,7 +19,7 @@ public class NonDeterministic {
      * @param automata autômato a ser otimizado
      */
     public NonDeterministic(Automata automata) {
-        this.automata = automata.clone();
+        super(automata);
     }
 
     /**
@@ -32,6 +27,7 @@ public class NonDeterministic {
      *
      * @return autômato equivalente determinístico
      */
+    @Override
     public Automata Start() {
         // Obtém todos os não determinísmos
         SortedMap<State, SortedMap<String, SortedSet<Transition>>> all = getNonDeterminism();

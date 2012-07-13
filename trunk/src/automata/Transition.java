@@ -6,10 +6,6 @@ package automata;
 public class Transition implements Comparable<Transition> {
 
     /**
-     * Caractere que representa o símbolo de vazio
-     */
-    public static final String EMPTY_SYMBOL = "~";
-    /**
      * Estado origem
      */
     private State state1;
