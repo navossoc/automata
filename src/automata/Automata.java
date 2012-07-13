@@ -10,15 +10,15 @@ public class Automata {
     /**
      * Conjunto que contém os símbolos
      */
-    private Set<String> symbols;
+    private SortedSet<String> symbols;
     /**
      * Mapa que contém os estados
      */
-    private Map<String, State> states;
+    private SortedMap<String, State> states;
     /**
      * Conjunto que contém as transições
      */
-    private Set<Transition> transitions;
+    private SortedSet<Transition> transitions;
 
     /**
      * Construtor padrão
@@ -92,7 +92,7 @@ public class Automata {
      *
      * @return
      */
-    public Set<String> getSymbols() {
+    public SortedSet<String> getSymbols() {
         return this.symbols;
     }
 
@@ -142,8 +142,24 @@ public class Automata {
      *
      * @return
      */
-    public Set<Transition> getTransitions() {
+    public SortedSet<Transition> getTransitions() {
         return this.transitions;
+    }
+
+    /**
+     * Retorna um conjunto com todas as transições que tem origem no estado específicado
+     *
+     * @param origin estado de origem
+     * @return
+     */
+    public SortedSet<Transition> getTransitionsFromOrigin(State origin) {
+        SortedSet<Transition> tempTransitions = new TreeSet<Transition>();
+        for (Transition t : this.getTransitions()) {
+            if (t.getState1().equals(origin)) {
+                tempTransitions.add(t);
+            }
+        }
+        return tempTransitions;
     }
 
     /**
