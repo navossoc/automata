@@ -1,10 +1,7 @@
 package project;
 
 import automata.Automata;
-import project.algorithms.EmptyTransitions;
-import project.algorithms.InaccessibleStates;
-import project.algorithms.NonDeterministic;
-import project.algorithms.UselessStates;
+import project.algorithms.*;
 
 /**
  * Classe principal
@@ -40,6 +37,12 @@ public class Main {
             FileFormat.read("samples/" + file + i, a1);
             Automata a2 = new UselessStates(a1).Start();
             FileFormat.write("samples/" + file + i + ".r4", a2);
+        }
+        for (int i = 15; i <= 19; i++) {
+            Automata a1 = new Automata();
+            FileFormat.read("samples/" + file + i, a1);
+            Automata a2 = new MinimizationFA(a1).Start();
+            FileFormat.write("samples/" + file + i + ".r5", a2);
         }
     }
 }

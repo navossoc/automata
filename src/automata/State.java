@@ -88,6 +88,15 @@ public class State implements Comparable<State> {
     }
 
     /**
+     * Retorna se o estado é normal
+     *
+     * @return
+     */
+    public boolean isNormal() {
+        return this.type == NORMAL;
+    }
+
+    /**
      * Retorna se o estado é inicial e final ao mesmo tempo
      *
      * @return
