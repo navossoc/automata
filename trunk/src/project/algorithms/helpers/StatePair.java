@@ -4,48 +4,97 @@ import automata.State;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+/**
+ * Classe para auxiliar o algoritmo de minimização
+ */
 public class StatePair implements Comparable<StatePair> {
 
+    /**
+     * Primeiro estado
+     */
     private final State state1;
+    /**
+     * Segundo estado
+     */
     private final State state2;
-    private boolean mark;
+    /**
+     * Indica se esse par está marcado como não equivalente
+     */
+    private boolean marked;
+    // Lista de pares encabeçados nesse par
     SortedSet<StatePair> list;
 
-    public boolean isMarked() {
-        return mark;
-    }
-
-    public void setMarked() {
-        this.mark = true;
-    }
-
+    /**
+     * Construtor padrão
+     *
+     * @param state1 primeiro estado
+     * @param state2 segundo estado
+     */
     public StatePair(State state1, State state2) {
         this.state1 = state1;
         this.state2 = state2;
         this.list = new TreeSet<StatePair>();
     }
 
+    /**
+     * Retorna a lista de pares encabeçados nesse par
+     *
+     * @return
+     */
     public SortedSet<StatePair> getList() {
         return list;
     }
 
+    /**
+     * Retorna o primeiro estado do par ordenado
+     *
+     * @return
+     */
     public State getState1() {
         return state1;
     }
 
+    /**
+     * Retorna o esgundo estado do par ordenado
+     *
+     * @return
+     */
     public State getState2() {
         return state2;
     }
 
+    /**
+     * Retorna se o par está marcado
+     *
+     * @return
+     */
+    public boolean isMarked() {
+        return marked;
+    }
+
+    /**
+     * Marca todos os pares que estão na lista (recursivamente)
+     */
     public void markAll() {
         if (list.size() > 0) {
+            // Para cada par da lista
             for (StatePair other : this.list) {
+                // Se não for ele mesmo
                 if (other != this) {
+                    // Marca o par
                     other.setMarked();
+                    // Marca todos da lista
                     other.markAll();
                 }
             }
         }
+    }
+
+    /**
+     * Marca esse par
+     */
+    public void setMarked() {
+        this.marked = true;
     }
 
     @Override
