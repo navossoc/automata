@@ -1,0 +1,12 @@
+a b c d e
+q0 q1 q2 q3q4
+q0
+q3q4
+q0 a q1
+q0 b q2
+q1 b q1
+q1 c q2
+q1 e q3q4
+q2 c q1
+q2 d q2
+q2 e q3q4
