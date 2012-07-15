@@ -38,8 +38,8 @@ public class EmptyTransitions extends BaseAlgorithm {
 
                     // Verifica se o estado de destino é final
                     if (destination.isFinal()) {
-                        // Adiciona ao estado de origem o atributo final
-                        origin.setType(origin.getType() | State.FINAL);
+                        // Adiciona ao estado de origem o tipo final
+                        origin.addFinal();
                     }
 
                     // Obtém todas as transições que partem do estado destino

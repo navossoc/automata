@@ -70,6 +70,20 @@ public class State implements Comparable<State> {
     }
 
     /**
+     * Adiciona o tipo inicial
+     */
+    public void addInitial() {
+        this.type |= State.INITIAL;
+    }
+
+    /**
+     * Adiciona o tipo final
+     */
+    public void addFinal() {
+        this.type |= State.FINAL;
+    }
+
+    /**
      * Retorna se o estado é inicial
      *
      * @return

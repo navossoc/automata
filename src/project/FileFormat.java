@@ -16,7 +16,7 @@ public class FileFormat {
     /**
      * Separador padrão
      */
-    private static final String SEPARATOR = " ";
+    public static final String SEPARATOR = " ";
     /**
      * Separado usado nos símbolos
      */

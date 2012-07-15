@@ -113,7 +113,7 @@ public class Automata {
     public SortedSet<State> getInitialStates() {
         SortedSet<State> initials = new TreeSet<State>();
         for (State state : this.states.values()) {
-            // Verifica se o estado contém o atributo inicial
+            // Verifica se o estado contém o tipo inicial
             if (state.isInitial()) {
                 initials.add(state);
             }
@@ -129,7 +129,7 @@ public class Automata {
     public SortedSet<State> getFinalStates() {
         SortedSet<State> finals = new TreeSet<State>();
         for (State state : this.states.values()) {
-            // Verifica se o estado contém o atributo final
+            // Verifica se o estado contém o tipo final
             if (state.isFinal()) {
                 finals.add(state);
             }
