@@ -4,6 +4,7 @@ import automata.Automata;
 import automata.State;
 import automata.Transition;
 import java.util.*;
+import project.FileFormat;
 import project.algorithms.helpers.StatePair;
 
 /**
@@ -25,153 +26,196 @@ public class MinimizationFA extends BaseAlgorithm {
     /**
      * Executa o algoritmo de minimização
      *
-     * @return autômato equivalente com estados minimizados
+     * @return autômato mínimo equivalente
      */
     @Override
     public Automata Start() {
         convertTotal();
 
+        // Array com todos os estados
         State[] arrrayStates = this.automata.getStates().toArray(new State[0]);
+
+        // Tabela com os pares de estados
         SortedSet<StatePair> statesPair = new TreeSet<StatePair>();
 
         // Construção da tabela
-        for (int i = 0; i < arrrayStates.length - 1; i++) {   // horizontal (finais)
-            State state1 = arrrayStates[i];
-            for (int j = i + 1; j < arrrayStates.length; j++) {    // vertical (não finais)
-                State state2 = arrrayStates[j];
-                StatePair pair = new StatePair(state1, state2);
-                statesPair.add(pair);
-                // Marcação dos estados trivialmente não equivalente
+        for (int i = 0; i < arrrayStates.length - 1; i++) {   // eixo horizontal
+            State stateX = arrrayStates[i];
+            for (int j = i + 1; j < arrrayStates.length; j++) {    // eixo vertical
+                State stateY = arrrayStates[j];
 
+                // Cria e adiciona um par de estados
+                StatePair pair = new StatePair(stateX, stateY);
+                statesPair.add(pair);
+
+                // Marcação dos estados trivialmente não equivalente
                 // Se o par é (F, 'F) ou ('F, F)
-                if ((state1.isFinal() != state2.isFinal())) {
-                    // Marcar o par
+                if ((stateX.isFinal() != stateY.isFinal())) {
+                    // Marca o par
                     pair.setMarked();
                 }
             }
         }
 
-        SortedSet<StatePair> nonMarked = getNonMarked(statesPair);
-        Iterator<StatePair> iterator = nonMarked.iterator();
-        // Para cada par não marcado
-        while (iterator.hasNext()) {
-            StatePair pair = iterator.next();
 
-            // Certifica que o par não foi marcado
-            if (!pair.isMarked()) {
+        // Conjunto com todos os pares não marcados
+        SortedSet<StatePair> nonMarked;
+
+        // Obtém todos os pares de estados não marcados
+        nonMarked = getNonMarked(statesPair);
+
+        // Para cada par não marcado
+        Iterator<StatePair> iterator = nonMarked.iterator();
+        while (iterator.hasNext()) {
+            StatePair quqv = iterator.next();
+
+            // Verifica se o par não foi marcado
+            if (!quqv.isMarked()) {
                 // Verificação do par
-                if (checkPair(statesPair, pair)) {
+                if (checkPair(statesPair, quqv)) {
                     iterator.remove();
                 }
             }
         }
 
         // Unificação dos estados equivalentes
+
+        // Obtém todos os pares de estados não marcados
         nonMarked = getNonMarked(statesPair);
-        System.out.println(nonMarked);
+
+        // Lista com o conjunto dos estados que serão unificados
         List<SortedSet<State>> mergedStates = merge(nonMarked);
 
+        // Para cada conjunto de estados
         for (SortedSet<State> states : mergedStates) {
-            String newLabel = "";
+            // Nome do rótulo do estado unificado
+            String mergedLabel = "";
             for (State s : states) {
-                newLabel += s.getLabel();
+                mergedLabel += s.getLabel();
             }
 
-            State newState = new State(newLabel, states.first().getType());
-            replaceState(states, newState);
-            this.automata.addState(newState);
+            // Cria o novo estado
+            State mergedState = new State(mergedLabel, states.first().getType());
+            // Substituí todas as referências dos estados antigos pelo estado unificado
+            replaceState(states, mergedState);
+            // Adiciona o novo estado
+            this.automata.addState(mergedState);
         }
+
+        // Remove as transições que foram inseridas ao tornar o autômato total
         removeTotal();
 
         return this.automata;
     }
 
     /**
-     * Analísa se o par específicado deve ser marcado como não equivalente
+     * Analisa se o par específicado deve ser marcado como não equivalente
      *
      * @param statesPair conjunto com todos os pares não marcados
-     * @param pair par a ser analisado
+     * @param quqv par a ser analisado
      * @return
      */
-    private boolean checkPair(SortedSet<StatePair> statesPair, StatePair pair) {
-        SortedMap<String, State> s1T = new TreeMap<String, State>();
-        SortedMap<String, State> s2T = new TreeMap<String, State>();
-        boolean marked = false;
+    private boolean checkPair(SortedSet<StatePair> statesPair, StatePair quqv) {
+        // Mapa com símbolos e estados de destino para qu
+        SortedMap<String, State> quStates = new TreeMap<String, State>();
+        // Para cada transição a partir da origem de qu
+        for (Transition transition : this.automata.getTransitionsFromOrigin(quqv.getState1())) {
+            // Para cada símbolo
+            for (String symbol : this.automata.getSymbols()) {
+                // Se o símbolo da transição for igual
+                if (transition.getSymbol().equals(symbol)) {
+                    // Associa o símbolo e o estado no mapa
+                    quStates.put(symbol, transition.getState2());
+                }
+            }
+        }
 
-        for (Transition t : this.automata.getTransitionsFromOrigin(pair.getState1())) {
+        // Mapa com símbolos e seus respectivos estados de destino para qv
+        SortedMap<String, State> qvStates = new TreeMap<String, State>();
+        // Para cada transição a partir da origem de qv
+        for (Transition transition : this.automata.getTransitionsFromOrigin(quqv.getState2())) {
+            // Para cada símbolo
             for (String symbol : this.automata.getSymbols()) {
-                if (t.getSymbol().equals(symbol)) {
-                    s1T.put(symbol, t.getState2());
+                // Se o símbolo da transição for igual
+                if (transition.getSymbol().equals(symbol)) {
+                    // Associa o símbolo e o estado no mapa
+                    qvStates.put(symbol, transition.getState2());
                 }
             }
         }
-        for (Transition t : this.automata.getTransitionsFromOrigin(pair.getState2())) {
-            for (String symbol : this.automata.getSymbols()) {
-                if (t.getSymbol().equals(symbol)) {
-                    s2T.put(symbol, t.getState2());
-                }
-            }
-        }
+
+        // Flag para indicar se o par foi marcado
+        boolean marked = false;
 
         // Para cada símbolo
         for (String symbol : this.automata.getSymbols()) {
-            State state1 = s1T.get(symbol); // pu
-            State state2 = s2T.get(symbol); // pv
-            if (state1 != null && state2 != null) {
+            State pu = quStates.get(symbol); // pu
+            State pv = qvStates.get(symbol); // pv
 
-
-                // Se pu = pv (caso a), o par não deve ser marcado
-                if (state1.equals(state2)) {
-                } // Se pu != pv (caso b e c)
-                else {
-                    // Obtém a referência do par
-                    StatePair temp = new StatePair(state1, state2);
-                    for (StatePair tempState : statesPair) {
-                        if (tempState.equals(temp)) {
-                            temp = tempState;
-                            break;
-                        }
+            // Se pu = pv (caso a)
+            if (pu.equals(pv)) {
+                // o par não deve ser marcado
+                continue;
+            } else { // Se pu != pv (caso b e c)
+                // Obtém a referência do par
+                StatePair pupv = new StatePair(pu, pv);
+                for (StatePair tempState : statesPair) {
+                    if (tempState.equals(pupv)) {
+                        pupv = tempState;
+                        break;
                     }
+                }
 
-                    // Se o par {pu,pv} não estiver marcado
-                    if (!temp.isMarked()) {
-                        // O par {qu,qv} é incluido em uma lista de {pu,pv}
-                        temp.getList().add(pair);
-                    } else { // se {pu,pv} está marcado
-                        // {qu,qv} não é equivalente e é marcado
-                        pair.setMarked();
-                        // É marcado todos os pares na lista de {qu,qv}
-                        pair.markAll();
-                        marked = true;
-                    }
+                // Se o par {pu,pv} não estiver marcado
+                if (!pupv.isMarked()) {
+                    // O par {qu,qv} é incluido em uma lista de {pu,pv}
+                    pupv.getList().add(quqv);
+                } else { // se {pu,pv} está marcado
+                    // {qu,qv} não é equivalente e é marcado
+                    quqv.setMarked();
+                    // É marcado todos os pares na lista de {qu,qv}
+                    quqv.markAll();
+                    marked = true;
                 }
             }
         }
+
         return marked;
     }
 
     /**
-     * Verifica e converse se necessário o autômato para função total
+     * Se necessário converte o autômato para função total
      */
     private void convertTotal() {
-        if (this.automata.getSymbols().size() * this.automata.getStates().size() > this.automata.getTransitions().size()) {
-            System.out.println("nao é total, deve converter");
-            totalState = new State(" ", State.NORMAL);
-            this.automata.addState(totalState);
-            for (State state : this.automata.getStates()) {
-                SortedSet<Transition> transitions = this.automata.getTransitionsFromOrigin(state);
-                if (transitions.size() < this.automata.getSymbols().size()) {
-                    for (String symbol : this.automata.getSymbols()) {
-                        boolean used = false;
-                        for (Transition transition : transitions) {
-                            if (transition.getSymbol().equals(symbol)) {
-                                used = true;
-                                break;
-                            }
+        // Verifica se esse autômato é total
+        if (this.automata.getTransitions().size() == this.automata.getSymbols().size() * this.automata.getStates().size()) {
+            return; // Não é necessário converter
+        }
+
+        // Cria e adiciona um novo estado não final (total)
+        totalState = new State(FileFormat.SEPARATOR, State.NORMAL);
+        this.automata.addState(totalState);
+
+        // Para cada estado do autômato atual
+        for (State state : this.automata.getStates()) {
+            // Obtém todas as transições a partir da origem desse estado
+            SortedSet<Transition> transitions = this.automata.getTransitionsFromOrigin(state);
+            // Se o número de transições for menor que o número de símbolos
+            if (transitions.size() < this.automata.getSymbols().size()) {
+                // Procura quais símbolos ainda precisam ser usados
+                for (String symbol : this.automata.getSymbols()) {
+                    boolean used = false;
+                    for (Transition transition : transitions) {
+                        if (transition.getSymbol().equals(symbol)) {
+                            used = true;
+                            break;
                         }
-                        if (!used) {
-                            this.automata.addTransition(new Transition(state, totalState, symbol));
-                        }
+                    }
+
+                    // Se o símbolo não foi usado
+                    if (!used) {
+                        // Adiciona uma transição para o estado complementar (total)
+                        this.automata.addTransition(new Transition(state, totalState, symbol));
                     }
                 }
             }
@@ -199,25 +243,32 @@ public class MinimizationFA extends BaseAlgorithm {
             State origin = pair.getState1();
             State destination = pair.getState2();
 
-            System.out.println(origin + "(" + origin.getType() + ") " + destination + "(" + destination.getType() + ")");
+            // Flag para indicar se o par deve ser unificado
+            boolean merged = false;
 
-            boolean add = false;
+            // Se o estado de origem for inicial
             if (origin.isInitial()) {
-                destination.setType(destination.getType() | State.INITIAL);
-                add = true;
+                // Adiciona ao estado de destino o tipo inicial
+                destination.addInitial();
+                merged = true;
             }
+            // Se o estado de destino for inicial
             if (destination.isInitial()) {
-                origin.setType(origin.getType() | State.INITIAL);
-                add = true;
+                // Adiciona ao estado de origem o tipo inicial
+                origin.addInitial();
+                merged = true;
             }
 
+            // Se os estados de origem e destino forem normais
             if (origin.isNormal() && destination.isNormal()) {
-                add = true;
-            } else if (origin.isFinal() && destination.isFinal()) {
-                add = true;
+                merged = true;
+            } // Se os estados de origem e destino forem finais
+            else if (origin.isFinal() && destination.isFinal()) {
+                merged = true;
             }
 
-            if (add) {
+            // Deve ser unificado
+            if (merged) {
                 // Estado de origem
                 newState.add(origin);
                 // Estado de destino
@@ -256,57 +307,79 @@ public class MinimizationFA extends BaseAlgorithm {
      * @return um novo conjunto contendo os pares não marcados
      */
     private SortedSet<StatePair> getNonMarked(SortedSet<StatePair> states) {
-        SortedSet<StatePair> statesPair = new TreeSet<StatePair>();
+        // Conjunto com todos os pares não marcados
+        SortedSet<StatePair> nonMarkedPairs = new TreeSet<StatePair>();
+
         // Para cada par
         for (StatePair pair : states) {
             // Se o par não estiver marcado
             if (!pair.isMarked()) {
                 // Adiciona ao novo conjunto
-                statesPair.add(pair);
+                nonMarkedPairs.add(pair);
             }
         }
-        return statesPair;
+
+        return nonMarkedPairs;
     }
 
     /**
-     * Verifica e remove se necessário as transições e estado extra devido a conversão da função total
+     * Remove se necessário as transições e o estado extra adicionados devido a conversão para função total
      */
     private void removeTotal() {
-        if (totalState != null) {
-            Iterator<Transition> transitions = this.automata.getTransitions().iterator();
-            while (transitions.hasNext()) {
-                Transition transition = transitions.next();
-
-                if (transition.getState1().equals(totalState) || transition.getState2().equals(totalState)) {
-                    transitions.remove();
-                }
-            }
-            this.automata.removeState(totalState);
+        // Verifica se o estado complementar não foi criado
+        if (totalState == null) {
+            return; // ignora
         }
-    }
 
-    /**
-     * Substitui os estados antigos pelo novo estado unificado em todas as transições
-     *
-     * @param allStates conjunto contendo todos os estados antigos
-     * @param newState novo estado a ser inserido
-     */
-    private void replaceState(SortedSet<State> allStates, State newState) {
-
-        Set<Transition> newTransitions = new TreeSet<Transition>();
-
+        // Para cada transição
         Iterator<Transition> transitions = this.automata.getTransitions().iterator();
         while (transitions.hasNext()) {
             Transition transition = transitions.next();
 
-            if (allStates.contains(transition.getState1()) && allStates.contains(transition.getState2())) {
+            // Se a transição tiver origem ou destino ao estado complementar (total)
+            if (transition.getState1().equals(totalState) || transition.getState2().equals(totalState)) {
+                // Remove a transição
                 transitions.remove();
+            }
+        }
+
+        // Remove o estado complementar (total)
+        this.automata.removeState(totalState);
+    }
+
+    /**
+     * Substituí os estados antigos pelo novo estado unificado em todas as transições
+     *
+     * @param oldStates conjunto contendo todos os estados antigos
+     * @param newState novo estado a ser substituído
+     */
+    private void replaceState(SortedSet<State> oldStates, State newState) {
+
+        // Conjunto com todas as novas transições a serem adicionadas
+        Set<Transition> newTransitions = new TreeSet<Transition>();
+
+        // Para cada transição
+        Iterator<Transition> transitions = this.automata.getTransitions().iterator();
+        while (transitions.hasNext()) {
+            Transition transition = transitions.next();
+
+            // Se a origem e o destino da transição for de algum dos estados antigos
+            if (oldStates.contains(transition.getState1()) && oldStates.contains(transition.getState2())) {
+                // Remove essa transição
+                transitions.remove();
+                // Cria uma nova transição com o estado a ser substituído
                 newTransitions.add(new Transition(newState, newState, transition.getSymbol()));
-            } else if (allStates.contains(transition.getState1())) {
+            } // Se a origem da transição for de algum dos estados antigos
+            else if (oldStates.contains(transition.getState1())) {
+                // Remove essa transição
                 transitions.remove();
+                // Cria uma nova transição com o estado a ser substituído
                 newTransitions.add(new Transition(newState, transition.getState2(), transition.getSymbol()));
-            } else if (allStates.contains(transition.getState2())) {
+            } // Se o destino da transição for de algum dos estados antigos
+            else if (oldStates.contains(transition.getState2())) {
+                // Remove essa transição
                 transitions.remove();
+                // Cria uma nova transição com o estado a ser substituído
                 newTransitions.add(new Transition(transition.getState1(), newState, transition.getSymbol()));
             }
         }
@@ -317,7 +390,7 @@ public class MinimizationFA extends BaseAlgorithm {
         }
 
         // Remove os estados antigos
-        for (State state : allStates) {
+        for (State state : oldStates) {
             this.automata.removeState(state);
         }
     }

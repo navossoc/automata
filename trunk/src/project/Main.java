@@ -38,7 +38,7 @@ public class Main {
             Automata a2 = new UselessStates(a1).Start();
             FileFormat.write("samples/" + file + i + ".r4", a2);
         }
-        for (int i = 15; i <= 19; i++) {
+        for (int i = 15; i <= 20; i++) {
             Automata a1 = new Automata();
             FileFormat.read("samples/" + file + i, a1);
             Automata a2 = new MinimizationFA(a1).Start();
