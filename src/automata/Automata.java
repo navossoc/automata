@@ -44,6 +44,7 @@ public class Automata {
      * @param state estado a ser adicionado
      */
     public void addState(State state) {
+        System.out.println("Adicionado o estado:\t" + state);
         this.states.put(state.getLabel(), state);
     }
 
@@ -74,7 +75,20 @@ public class Automata {
      * @param transition transição
      */
     public void addTransition(Transition transition) {
+        System.out.println("Adicionada a transição:\t" + transition);
         this.transitions.add(transition);
+    }
+
+    /**
+     * Adiciona uma transição
+     *
+     * @param state1 rótulo do estado de origem
+     * @param state2 rótulo do estado de destino
+     * @param symbol símbolo
+     */
+    public void addTransition(String state1, String state2, String symbol) {
+        this.transitions.add(new Transition(this.states.get(state1),
+                this.states.get(state2), symbol));
     }
 
     /**
@@ -106,19 +120,19 @@ public class Automata {
     }
 
     /**
-     * Retorna um conjunto contendo estados iniciais
+     * Retorna o estado inicial
      *
      * @return
      */
-    public SortedSet<State> getInitialStates() {
-        SortedSet<State> initials = new TreeSet<State>();
+    public State getInitialState() {
+        // Para cada estado
         for (State state : this.states.values()) {
             // Verifica se o estado contém o tipo inicial
             if (state.isInitial()) {
-                initials.add(state);
+                return state;
             }
         }
-        return initials;
+        return null;
     }
 
     /**
@@ -128,6 +142,7 @@ public class Automata {
      */
     public SortedSet<State> getFinalStates() {
         SortedSet<State> finals = new TreeSet<State>();
+        // Para cada estado
         for (State state : this.states.values()) {
             // Verifica se o estado contém o tipo final
             if (state.isFinal()) {
@@ -182,10 +197,21 @@ public class Automata {
      * Remove um estado
      *
      * @param state estado a ser removido
-     * @return
      */
-    public State removeState(State state) {
-        return this.states.remove(state.getLabel());
+    public void removeState(State state) {
+        System.out.println("Removido o estado:\t" + state);
+        this.states.remove(state.getLabel());
+    }
+
+    /**
+     * Remove um conjunto de estados
+     *
+     * @param states conjuntos de estados a serem removidos
+     */
+    public void removeStates(Set<State> states) {
+        for (State state : states) {
+            this.removeState(state);
+        }
     }
 
     /**
@@ -195,6 +221,7 @@ public class Automata {
      * @return
      */
     public boolean removeTransition(Transition transition) {
+        System.out.println("Removida a transição:\t" + transition);
         return this.transitions.remove(transition);
     }
 
@@ -206,10 +233,9 @@ public class Automata {
             temp.states.put(state.getLabel(), new State(state));
         }
         for (Transition transition : this.transitions) {
-            temp.addTransition(new Transition(
-                    temp.getState(transition.getState1().getLabel()),
-                    temp.getState(transition.getState2().getLabel()),
-                    transition.getSymbol()));
+            temp.addTransition(transition.getState1().getLabel(),
+                    transition.getState2().getLabel(),
+                    transition.getSymbol());
         }
 
         return temp;

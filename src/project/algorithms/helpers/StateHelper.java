@@ -71,7 +71,6 @@ public class StateHelper implements Comparable<StateHelper> {
         this.visited = true;
     }
 
-    
     /**
      * Obtém o próximo estado válido porém não visitado
      *
@@ -104,8 +103,8 @@ public class StateHelper implements Comparable<StateHelper> {
                 tempState.setValid();
             }
         }
-    }   
-    
+    }
+
     @Override
     public int compareTo(StateHelper o) {
         return this.state.compareTo(o.state);
