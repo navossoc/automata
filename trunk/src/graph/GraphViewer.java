@@ -12,9 +12,9 @@ import edu.uci.ics.jung.visualization.RenderContext;
 import edu.uci.ics.jung.visualization.VisualizationViewer;
 import edu.uci.ics.jung.visualization.control.DefaultModalGraphMouse;
 import edu.uci.ics.jung.visualization.control.ModalGraphMouse;
-import graph.transformers.StateLabeller;
-import graph.transformers.StatePainter;
-import graph.transformers.TransitionLabeller;
+import edu.uci.ics.jung.visualization.decorators.EdgeShape;
+import edu.uci.ics.jung.visualization.decorators.ToStringLabeller;
+import graph.transformers.*;
 import java.awt.Dimension;
 
 /**
@@ -84,17 +84,20 @@ public class GraphViewer extends javax.swing.JFrame {
         Layout<State, Transition> layout = new FRLayout<State, Transition>(graph);
         layout.setSize(new Dimension(750, 550));
 
-        // VisualizationComponent<V,E>
+        // VisualizationComponent<V, E>
         final VisualizationViewer<State, Transition> vv = new VisualizationViewer<State, Transition>(layout);
 
+        // RenderContext<V, E>
         RenderContext<State, Transition> renderContext = vv.getRenderContext();
 
-        // Distância entre o rótulo e as arestas
-        renderContext.setLabelOffset(15);
-
+        // Altera o formato da fonte dos vértices
+        renderContext.setEdgeFontTransformer(new TransitionFont());
+        // Altera o formato da curva das linhas
+        renderContext.setEdgeShapeTransformer(new EdgeShape.BentLine<State, Transition>());
         // Colore os vértices (inicial, final, ambos)
         renderContext.setVertexFillPaintTransformer(new StatePainter());
-
+        // Altera o desenho dos vértices (inicial, final, ambos)
+        renderContext.setVertexShapeTransformer(new StateShape());
         // Mostra os rótulos dos vértices e arestas
         renderContext.setVertexLabelTransformer(new StateLabeller());
         renderContext.setEdgeLabelTransformer(new TransitionLabeller());
@@ -104,6 +107,10 @@ public class GraphViewer extends javax.swing.JFrame {
         gm.setMode(ModalGraphMouse.Mode.TRANSFORMING);
         vv.setGraphMouse(gm);
         vv.setPreferredSize(new Dimension(800, 600));
+
+        // Adiciona dicas para os vértices e arestas
+        vv.setEdgeToolTipTransformer(new ToStringLabeller<Transition>());
+        vv.setVertexToolTipTransformer(new ToStringLabeller<State>());
 
         // Ajusta a posição dos vértices do grafo na tela
         Relaxer relaxer = vv.getModel().getRelaxer();

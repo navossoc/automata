@@ -9,7 +9,7 @@ import org.apache.commons.collections15.Transformer;
 public class StateLabeller implements Transformer<State, String> {
 
     /**
-     * Transforma um estado em um rótulo amigável de se ler
+     * Retorna um rótulo amigável para o estado
      *
      * @param state estado que deve ser transformado
      * @return nome do estado
