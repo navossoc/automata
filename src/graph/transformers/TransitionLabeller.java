@@ -9,10 +9,10 @@ import org.apache.commons.collections15.Transformer;
 public class TransitionLabeller implements Transformer<Transition, String> {
 
     /**
-     * Transforma uma transição em um rótulo amigável de se ler
+     * Retorna um rótulo amigável para a transição
      *
      * @param transition transição que deve ser transformada
-     * @return símbolo consumido na transição
+     * @return símbolo consumido
      */
     @Override
     public String transform(Transition transition) {

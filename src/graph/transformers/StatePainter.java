@@ -5,9 +5,17 @@ import java.awt.Color;
 import java.awt.Paint;
 import org.apache.commons.collections15.Transformer;
 
-// TODO: tentar modificar o formato da figura
+/**
+ * Classe responsável por alterar a cor dos estados do autômato
+ */
 public class StatePainter implements Transformer<State, Paint> {
 
+    /**
+     * Retorna uma nova cor de acordo com o tipo do estado
+     *
+     * @param state estado que deve ser colorido
+     * @return cor do estado
+     */
     @Override
     public Paint transform(State state) {
         switch (state.getType()) {
