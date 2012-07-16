@@ -69,6 +69,7 @@ public class FileFormat {
             String[] initials = br.readLine().trim().split(SEPARATOR);
             if (initials.length > 1) {
                 System.out.println("Autômato inválido, contém múltiplos estados iniciais.");
+                br.close();
                 return false;
             }
             automata.addStates(initials, State.INITIAL);
@@ -88,7 +89,6 @@ public class FileFormat {
             }
 
             br.close();
-            fr.close();
 
             return true;
         } catch (IOException ex) {
@@ -151,7 +151,6 @@ public class FileFormat {
             }
 
             bw.close();
-            fw.close();
 
             return true;
         } catch (IOException ex) {
