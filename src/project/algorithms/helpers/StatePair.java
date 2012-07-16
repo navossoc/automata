@@ -81,10 +81,13 @@ public class StatePair implements Comparable<StatePair> {
             for (StatePair other : this.list) {
                 // Se não for ele mesmo
                 if (other != this) {
-                    // Marca o par
-                    other.setMarked();
-                    // Marca todos da lista
-                    other.markAll();
+                    // Verifica se está marcado
+                    if (!other.isMarked()) {
+                        // Marca o par
+                        other.setMarked();
+                        // Marca todos da lista
+                        other.markAll();
+                    }
                 }
             }
         }
