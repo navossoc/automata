@@ -6,6 +6,8 @@ import automata.Transition;
 import java.io.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JFileChooser;
+import javax.swing.filechooser.FileFilter;
 
 /**
  * Classe usada para leitura/escrita de arquivos
@@ -21,6 +23,27 @@ public class FileFormat {
      * Separado usado nos símbolos
      */
     private static final String SYMBOL_SEPARATOR = ",";
+
+    /**
+     * Exibe uma janela para selecionar um arquivo
+     *
+     * @param automata autômato lido do arquivo
+     * @return caminho completo com o nome do arquivo
+     */
+    public static String open(Automata automata) {
+        JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setFileFilter(new ExtensionFileFilter("Autômato", "txt"));
+        // Exibe o diálogo de abrir
+        if (fileChooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
+            String filename = fileChooser.getSelectedFile().getAbsolutePath();
+            // Lê o arquivo
+            if (read(filename, automata)) {
+                return filename;
+            }
+        }
+
+        return null;
+    }
 
     /**
      * Lê o arquivo especificado
@@ -143,5 +166,56 @@ public class FileFormat {
         }
 
         return false;
+    }
+
+    /**
+     * FileFilter for file dialog
+     * http://www.java2s.com/Code/JavaAPI/javax.swing/JFileChoosersetFileFilterFileFilterfilter.htm
+     */
+    static class ExtensionFileFilter extends FileFilter {
+
+        String description;
+        String extensions[];
+
+        public ExtensionFileFilter(String description, String extension) {
+            this(description, new String[]{extension});
+        }
+
+        public ExtensionFileFilter(String description, String extensions[]) {
+            if (description == null) {
+                this.description = extensions[0];
+            } else {
+                this.description = description;
+            }
+            this.extensions = (String[]) extensions.clone();
+            toLower(this.extensions);
+        }
+
+        private void toLower(String array[]) {
+            for (int i = 0, n = array.length; i < n; i++) {
+                array[i] = array[i].toLowerCase();
+            }
+        }
+
+        @Override
+        public String getDescription() {
+            return description;
+        }
+
+        @Override
+        public boolean accept(File file) {
+            if (file.isDirectory()) {
+                return true;
+            } else {
+                String path = file.getAbsolutePath().toLowerCase();
+                for (int i = 0, n = extensions.length; i < n; i++) {
+                    String extension = extensions[i];
+                    if ((path.endsWith(extension) && (path.charAt(path.length() - extension.length() - 1)) == '.')) {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
     }
 }
