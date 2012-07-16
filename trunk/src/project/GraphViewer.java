@@ -16,6 +16,7 @@ import edu.uci.ics.jung.visualization.decorators.EdgeShape;
 import edu.uci.ics.jung.visualization.decorators.ToStringLabeller;
 import graph.transformers.*;
 import java.awt.Dimension;
+import javax.swing.JOptionPane;
 import project.algorithms.*;
 
 /**
@@ -63,6 +64,7 @@ public class GraphViewer extends javax.swing.JFrame {
         });
 
         jButtonNext.setText(">");
+        jButtonNext.setEnabled(false);
         jButtonNext.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButtonNextActionPerformed(evt);
@@ -114,12 +116,6 @@ public class GraphViewer extends javax.swing.JFrame {
         runAlgorithm();
         // Desenha o autômato
         drawAutomata();
-        // Habilita o botão de avançar
-        jButtonNext.setEnabled(true);
-        // Desabilita o botão de voltar
-        if (step <= 0) {
-            jButtonPrevious.setEnabled(false);
-        }
     }//GEN-LAST:event_jButtonPreviousActionPerformed
 
     /**
@@ -133,12 +129,6 @@ public class GraphViewer extends javax.swing.JFrame {
         runAlgorithm();
         // Desenha o autômato
         drawAutomata();
-        // Habilita o botão de voltar
-        jButtonPrevious.setEnabled(true);
-        // Desabilita o botão de avançar
-        if (step >= 5) {
-            jButtonNext.setEnabled(false);
-        }
     }//GEN-LAST:event_jButtonNextActionPerformed
 
     /**
@@ -147,21 +137,13 @@ public class GraphViewer extends javax.swing.JFrame {
      * @param args
      */
     public static void main(String[] args) {
-        // Autômato inicial
-        final Automata automata = new Automata();
 
         // Janela para abrir o arquivo
-        /*
-         * String filename = FileFormat.open(automata);
-         * if (filename == null) {
-         * JOptionPane.showMessageDialog(null, "É necessário selecionar um arquivo para continuar", "Erro", JOptionPane.ERROR_MESSAGE);
-         * return;
-         * }
-         */
-
-        // TODO: apenas debug, substituir depois pela janela
-        final String filename = "samples\\automata5.txt";
-        FileFormat.read(filename, automata);
+        final String filename = FileFormat.open();
+        if (filename == null) {
+            JOptionPane.showMessageDialog(null, "É necessário selecionar um arquivo para continuar", "Erro", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
@@ -169,12 +151,16 @@ public class GraphViewer extends javax.swing.JFrame {
             @Override
             public void run() {
                 GraphViewer graphFrame = new GraphViewer();
-                // Mostra o grafo inicial
-                graphFrame.automatas[0] = automata;
+                // Autômato inicial
+                graphFrame.automatas[0] = new Automata();
                 graphFrame.filename = filename;
-                graphFrame.drawAutomata();
-                // Altera o título da janela
-                graphFrame.setWindowTitle();
+                // Lê o arquivo selecionado
+                if (FileFormat.read(filename, graphFrame.automatas[0])) {
+                    // Executa o algoritmo
+                    graphFrame.runAlgorithm();
+                    // Mostra o grafo inicial
+                    graphFrame.drawAutomata();
+                }
                 graphFrame.setVisible(true);
             }
         });
@@ -293,6 +279,11 @@ public class GraphViewer extends javax.swing.JFrame {
                 FileFormat.write(filename + ".s5.txt", automatas[5]);
                 break;
         }
+
+        // Botão de voltar
+        jButtonPrevious.setEnabled(step > 0);
+        // Botão de avançar
+        jButtonNext.setEnabled(step < 5);
 
         // Altera o título da janela
         setWindowTitle();

@@ -18,7 +18,7 @@ public class FileFormat {
     /**
      * Separador padrão
      */
-    public static final String SEPARATOR = " ";
+    private static final String SEPARATOR = " ";
     /**
      * Separado usado nos símbolos
      */
@@ -27,19 +27,14 @@ public class FileFormat {
     /**
      * Exibe uma janela para selecionar um arquivo
      *
-     * @param automata autômato lido do arquivo
      * @return caminho completo com o nome do arquivo
      */
-    public static String open(Automata automata) {
+    public static String open() {
         JFileChooser fileChooser = new JFileChooser();
         fileChooser.setFileFilter(new ExtensionFileFilter("Autômato", "txt"));
         // Exibe o diálogo de abrir
         if (fileChooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
-            String filename = fileChooser.getSelectedFile().getAbsolutePath();
-            // Lê o arquivo
-            if (read(filename, automata)) {
-                return filename;
-            }
+            return fileChooser.getSelectedFile().getAbsolutePath();
         }
 
         return null;
@@ -72,6 +67,10 @@ public class FileFormat {
 
             // Estados iniciais
             String[] initials = br.readLine().trim().split(SEPARATOR);
+            if (initials.length > 1) {
+                System.out.println("Autômato inválido, contém múltiplos estados iniciais.");
+                return false;
+            }
             automata.addStates(initials, State.INITIAL);
 
             // Estados finais
@@ -84,9 +83,7 @@ public class FileFormat {
                 String[] temp = transition.trim().split(SEPARATOR);
 
                 for (String symbol : temp[1].trim().split(SYMBOL_SEPARATOR)) {
-                    State state1 = automata.getState(temp[0]);
-                    State state2 = automata.getState(temp[2]);
-                    automata.addTransition(new Transition(state1, state2, symbol));
+                    automata.addTransition(temp[0], temp[2], symbol);
                 }
             }
 
@@ -135,12 +132,8 @@ public class FileFormat {
             bw.write(states.trim());
             bw.newLine();
 
-            // Estados iniciais
-            String initials = "";
-            for (State initial : automata.getInitialStates()) {
-                initials += initial + " ";
-            }
-            bw.write(initials.trim());
+            // Estados inicial
+            bw.write(automata.getInitialState().toString());
             bw.newLine();
 
             // Estados finais

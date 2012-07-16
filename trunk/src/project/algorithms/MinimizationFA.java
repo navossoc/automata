@@ -4,7 +4,6 @@ import automata.Automata;
 import automata.State;
 import automata.Transition;
 import java.util.*;
-import project.FileFormat;
 import project.algorithms.helpers.StatePair;
 
 /**
@@ -192,8 +191,14 @@ public class MinimizationFA extends BaseAlgorithm {
             return; // Não é necessário converter
         }
 
+        // Cria o rótulo do estado complementar
+        String totalLabel = this.automata.getInitialState().getLabel();
+        do {
+            totalLabel = "'" + totalLabel;
+        } while (this.automata.getState(totalLabel) != null);
+
         // Cria e adiciona um novo estado não final (total)
-        totalState = new State(FileFormat.SEPARATOR, State.NORMAL);
+        totalState = new State(totalLabel, State.NORMAL);
         this.automata.addState(totalState);
 
         // Para cada estado do autômato atual
@@ -390,8 +395,6 @@ public class MinimizationFA extends BaseAlgorithm {
         }
 
         // Remove os estados antigos
-        for (State state : oldStates) {
-            this.automata.removeState(state);
-        }
+        this.automata.removeStates(oldStates);
     }
 }
