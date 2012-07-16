@@ -221,7 +221,7 @@ public class GraphViewer extends javax.swing.JFrame {
         renderContext.setEdgeLabelTransformer(new TransitionLabeller());
 
         // Create a graph mouse and add it to the visualization component
-        DefaultModalGraphMouse gm = new DefaultModalGraphMouse();
+        DefaultModalGraphMouse<State, Transition> gm = new DefaultModalGraphMouse<State, Transition>();
         gm.setMode(ModalGraphMouse.Mode.TRANSFORMING);
         vv.setGraphMouse(gm);
         vv.setPreferredSize(new Dimension(width, height));
@@ -241,7 +241,6 @@ public class GraphViewer extends javax.swing.JFrame {
         jPanelGraph.removeAll();
         jPanelGraph.add(vv);
         validate();
-
     }
 
     /**
