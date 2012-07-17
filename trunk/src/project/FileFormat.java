@@ -6,6 +6,8 @@ import automata.Transition;
 import java.io.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileFilter;
 
@@ -16,11 +18,7 @@ import javax.swing.filechooser.FileFilter;
 public class FileFormat {
 
     /**
-     * Separador padrão
-     */
-    private static final String SEPARATOR = " ";
-    /**
-     * Separado usado nos símbolos
+     * Separador usado nos símbolos
      */
     private static final String SYMBOL_SEPARATOR = ",";
 
@@ -41,13 +39,12 @@ public class FileFormat {
     }
 
     /**
-     * Lê o arquivo especificado
+     * Valida o arquivo especificado
      *
      * @param filename nome do arquivo
-     * @param automata autômato correspondente
      * @return
      */
-    public static boolean read(String filename, Automata automata) {
+    private static boolean parse(String filename) {
         FileReader fr;
         try {
             fr = new FileReader(filename);
@@ -57,39 +54,134 @@ public class FileFormat {
 
         BufferedReader br = new BufferedReader(fr);
         try {
-            // Símbolos
-            String[] symbols = br.readLine().trim().split(SEPARATOR);
-            automata.addSymbols(symbols);
+            // Tipo da linha
+            final String[] errors = new String[]{
+                "Símbolos: ",
+                "Estados: ",
+                "Estado Inicial: ",
+                "Estados Finais: "
+            };
 
-            // Estados
-            String[] states = br.readLine().trim().split(SEPARATOR);
-            automata.addStates(states, State.NORMAL);
+            // Expressões regulares
+            final String[] patterns = new String[]{
+                "^\\s*\\w+(\\s+\\w+)*\\s*$",
+                "^\\s*\\w+(\\s+\\w+)*\\s*$",
+                "^\\s*\\w+\\s*$",
+                "^\\s*\\w+(\\s+\\w+)*\\s*$"
+            };
 
-            // Estados iniciais
-            String[] initials = br.readLine().trim().split(SEPARATOR);
-            if (initials.length > 1) {
-                System.out.println("Autômato inválido, contém múltiplos estados iniciais.");
+            // Linha lida
+            String line;
+            boolean invalid = false;
+            // Símbolos, estados, inicial, finais
+            for (int i = 0; i < 4; i++) {
+                // Tenta ler a linha
+                if ((line = br.readLine()) == null) {
+                    System.out.println(errors[i] + "Linha em branco");
+                    invalid = true;
+                    break;
+                }
+                // Verifica o formato
+                if (!Pattern.matches(patterns[i], line)) {
+                    System.out.println(errors[i] + "Formato inválido (" + line + ")");
+                    invalid = true;
+                    break;
+                }
+            }
+
+            // Se o arquivo for inválido
+            if (invalid) {
                 br.close();
                 return false;
             }
-            automata.addStates(initials, State.INITIAL);
-
-            // Estados finais
-            String[] finals = br.readLine().trim().split(SEPARATOR);
-            automata.addStates(finals, State.FINAL);
 
             // Transições
-            String transition;
-            while ((transition = br.readLine()) != null) {
-                String[] temp = transition.trim().split(SEPARATOR);
-
-                for (String symbol : temp[1].trim().split(SYMBOL_SEPARATOR)) {
-                    automata.addTransition(temp[0], temp[2], symbol);
+            Pattern pattern = Pattern.compile("^\\s*(\\w+)\\s+(\\w+(?:,\\w+)*)\\s+(\\w+)\\s*$");
+            while ((line = br.readLine()) != null) {
+                Matcher matcher = pattern.matcher(line);
+                if (!matcher.matches()) {
+                    System.out.println("Transição: Formato inválido (" + line + ")");
+                    invalid = true;
+                    break;
                 }
             }
 
             br.close();
+            return !invalid;
 
+        } catch (IOException ex) {
+            Logger.getLogger(FileFormat.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        return false;
+    }
+
+    /**
+     * Lê o arquivo especificado
+     *
+     * @param filename nome do arquivo
+     * @param automata autômato correspondente
+     * @return
+     */
+    public static boolean read(String filename, Automata automata) {
+        // Verifica se o formato do arquivo é inválido
+        if (!parse(filename)) {
+            System.out.println("Arquivo selecionado inválido");
+            return false;
+        }
+
+        FileReader fr;
+        try {
+            fr = new FileReader(filename);
+        } catch (FileNotFoundException ex) {
+            return false;
+        }
+
+        BufferedReader br = new BufferedReader(fr);
+        try {
+            // Linha lida
+            String line;
+
+            // Expressão regular
+            Pattern pattern, pattern2;
+            Matcher matcher;
+
+            // Símbolos
+            pattern = Pattern.compile("(\\w+)");
+            matcher = pattern.matcher(br.readLine());
+            while (matcher.find()) {
+                automata.addSymbol(matcher.group(1));
+            }
+
+            // Estados
+            matcher = pattern.matcher(br.readLine());
+            while (matcher.find()) {
+                automata.addState(matcher.group(1), State.NORMAL);
+            }
+
+            // Estado inicial
+            pattern2 = Pattern.compile("^\\s*(\\w+)\\s*$");
+            matcher = pattern2.matcher(br.readLine());
+            if (matcher.matches()) {
+                automata.addState(matcher.group(1), State.INITIAL);
+            }
+
+            // Estados finais
+            matcher = pattern.matcher(br.readLine());
+            while (matcher.find()) {
+                automata.addState(matcher.group(1), State.FINAL);
+            }
+
+            // Transições
+            pattern = Pattern.compile("^\\s*(\\w+)\\s+(\\w+(?:,\\w+)*)\\s+(\\w+)\\s*$");
+            while ((line = br.readLine()) != null) {
+                matcher = pattern.matcher(line);
+                while (matcher.find()) {
+                    automata.addTransition(matcher.group(1), matcher.group(3), matcher.group(2).split(SYMBOL_SEPARATOR));
+                }
+            }
+
+            br.close();
             return true;
         } catch (IOException ex) {
             Logger.getLogger(FileFormat.class.getName()).log(Level.SEVERE, null, ex);

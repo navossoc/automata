@@ -12,7 +12,7 @@ public abstract class BaseAlgorithm {
     /**
      * Caractere que representa o símbolo de vazio
      */
-    public static final String EMPTY_SYMBOL = "~";
+    public static final String EMPTY_SYMBOL = "_";
     /**
      * Mantém uma cópia do autômato que será modificado
      */
