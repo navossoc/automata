@@ -30,12 +30,12 @@ public class Automata {
     }
 
     /**
-     * Adiciona símbolos
+     * Adiciona um símbolo
      *
-     * @param symbols array de símbolos
+     * @param symbol símbolo a ser adicionado
      */
-    public void addSymbols(String[] symbols) {
-        this.symbols.addAll(Arrays.asList(symbols));
+    public void addSymbol(String symbol) {
+        this.symbols.add(symbol);
     }
 
     /**
@@ -49,23 +49,21 @@ public class Automata {
     }
 
     /**
-     * Adiciona estados
+     * Adiciona um estado
      *
-     * @param states array de estados
+     * @param label rótulo do estado
      * @param type tipo do estado (normal, inicial, final ou ambos)
      */
-    public void addStates(String[] states, int type) {
-        for (String label : states) {
-            // Verifica se o estado não existe
-            if (!this.states.containsKey(label)) {
-                // Adiciona
-                State state = new State(label, type);
-                this.states.put(label, state);
-            } else {
-                // Altera o tipo
-                State state = this.states.get(label);
-                state.setType(state.getType() | type);
-            }
+    public void addState(String label, int type) {
+        // Verifica se o estado não existe
+        if (!this.states.containsKey(label)) {
+            // Adiciona
+            State state = new State(label, type);
+            this.states.put(label, state);
+        } else {
+            // Altera o tipo
+            State state = this.states.get(label);
+            state.setType(state.getType() | type);
         }
     }
 
@@ -89,6 +87,22 @@ public class Automata {
     public void addTransition(String state1, String state2, String symbol) {
         this.transitions.add(new Transition(this.states.get(state1),
                 this.states.get(state2), symbol));
+    }
+
+    /**
+     * Adiciona transições
+     *
+     * @param state1 rótulo do estado de origem
+     * @param state2 rótulo do estado de destino
+     * @param symbols array de símbolos
+     */
+    public void addTransition(String state1, String state2, String[] symbols) {
+        State origin = this.states.get(state1);
+        State destination = this.states.get(state2);
+        // Para cada símbolo
+        for (String symbol : symbols) {
+            this.transitions.add(new Transition(origin, destination, symbol));
+        }
     }
 
     /**
