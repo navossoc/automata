@@ -67,7 +67,7 @@ public class FileFormat {
                 "^\\s*\\w+(\\s+\\w+)*\\s*$",
                 "^\\s*\\w+(\\s+\\w+)*\\s*$",
                 "^\\s*\\w+\\s*$",
-                "^\\s*\\w+(\\s+\\w+)*\\s*$"
+                "^\\s*(\\w+(\\s+\\w+)*)*\\s*$"
             };
 
             // Linha lida
@@ -225,7 +225,9 @@ public class FileFormat {
             bw.newLine();
 
             // Estados inicial
-            bw.write(automata.getInitialState().toString());
+            if (automata.getInitialState() != null) {
+                bw.write(automata.getInitialState().toString());
+            }
             bw.newLine();
 
             // Estados finais
