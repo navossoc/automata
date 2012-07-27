@@ -98,9 +98,20 @@ public class Automata {
      */
     public void addTransition(String state1, String state2, String[] symbols) {
         State origin = this.states.get(state1);
+        if (origin == null) {
+            this.addState(state1, State.NORMAL);
+            origin = this.states.get(state1);
+        }
+
         State destination = this.states.get(state2);
+        if (destination == null) {
+            this.addState(state2, State.NORMAL);
+            destination = this.states.get(state2);
+        }
+
         // Para cada símbolo
         for (String symbol : symbols) {
+            this.symbols.add(symbol);
             this.transitions.add(new Transition(origin, destination, symbol));
         }
     }
