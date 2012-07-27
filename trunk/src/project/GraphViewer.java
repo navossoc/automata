@@ -147,7 +147,6 @@ public class GraphViewer extends javax.swing.JFrame {
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
-
             @Override
             public void run() {
                 GraphViewer graphFrame = new GraphViewer();

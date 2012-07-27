@@ -24,7 +24,6 @@ public class Console extends JTextArea {
 
     private void updateTextArea(final String text) {
         SwingUtilities.invokeLater(new Runnable() {
-
             @Override
             public void run() {
                 Console.this.append(text);
@@ -34,7 +33,6 @@ public class Console extends JTextArea {
 
     private void redirectSystemStreams() {
         OutputStream out = new OutputStream() {
-
             @Override
             public void write(int b) throws IOException {
                 updateTextArea(String.valueOf((char) b));
