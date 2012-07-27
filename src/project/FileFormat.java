@@ -12,8 +12,7 @@ import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileFilter;
 
 /**
- * Classe usada para leitura/escrita de arquivos
- * contendo os autômatos
+ * Classe usada para leitura/escrita de arquivos contendo os autômatos
  */
 public class FileFormat {
 
