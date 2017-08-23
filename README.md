@@ -1,4 +1,4 @@
-#Finite Automata Optimizer
+# Finite Automata Optimizer
 
 This project Finite Automata Optimizer (Otimizador de Autômatos Finitos) was developed to reduce any NFA (Nondeterministic Finite Automata) to a minimal DFA (Deterministic Finite Automata).
 
@@ -40,7 +40,7 @@ Here are some screenshots of the automata been optimized:
 **Minimal DFA**
 ![Minimal DFA](http://www.navossoc.com/wp-content/uploads/2013/03/fao-step5.png)
 
-##Source code:
+## Source code:
 This source was written in Java language using [NetBeans 7.x](https://netbeans.org/) as IDE and the [JUNG](http://jung.sourceforge.net/) library to draw the graphs.
 All classes, methods, atributtes, etc. are written in English, but most comments are written in Brazilian Portuguese (as required by the teacher).
 
